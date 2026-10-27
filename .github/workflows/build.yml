@@ -1,0 +1,27 @@
+name: Build tweak
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: Randomblock1/theos-action@v1
+
+      - name: Compile
+        run: |
+          make clean package \
+            THEOS="$GITHUB_WORKSPACE/theos" \
+            TC_PATH="$(xcode-select -p)/Toolchains/XcodeDefault.xctoolchain"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: metalchams-build
+          path: |
+            packages/*.deb
+            .theos/obj/**/metalchams.dylib
+          if-no-files-found: error
